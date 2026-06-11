@@ -142,3 +142,20 @@ Ngày ghi chú: 2026-06-11. Phạm vi: các paper/preprint có liên quan trực
 - Nhóm paper gần nhất với project hiện tại: **High-Frequency Systolic Array-Based Transformer Accelerator**, **Generating Systolic Array Accelerators With Reusable Blocks**, **BAQET**, và **LLM on FPGA: Squeezing Language Models...**
 - Các ý tưởng nên áp dụng sớm: INT8 fixed-point GEMM, accumulator width rõ ràng, systolic PE array đơn giản, tiling theo BRAM, ping-pong/double buffer, feeder/collector tách khỏi core, testbench có PASS/FAIL.
 - Các ý tưởng nên để roadmap: sparse DSP chain, block-circulant compression, approximate attention, MoE, circuit sharing nonlinear ops.
+
+## Update 2026-06-11 for current RTL baseline
+
+Baseline hiện tại của repo là signed INT8 GEMM sequential reference core, chưa phải systolic array đầy đủ. Vì vậy các paper trên nên được dùng theo thứ tự ưu tiên sau:
+
+1. **Generating Systolic Array Accelerators With Reusable Blocks**: dùng để tách dần `gemm_int8_top` thành PE/feeder/collector/controller. Link: <https://ceca.pku.edu.cn/docs/20200915170624995514.pdf>.
+2. **High-Frequency Systolic Array-Based Transformer Accelerator on Field Programmable Gate Arrays**: dùng làm tham chiếu block tổng thể cho Transformer accelerator gồm buffer, reorder, arbiter và systolic array. Link: <https://www.mdpi.com/2079-9292/12/4/822>.
+3. **BAQET**: dùng để nhắc rằng attention/Transformer nhỏ cần BRAM-aware tiling và streaming từ đầu. Link: <https://people.ece.uw.edu/hauck/publications/BAQET_FPGA25.pdf>.
+4. **FlightLLM**: dùng cho roadmap dài hạn về mixed precision/sparsity/memory-flow; chưa nên áp dụng vào RTL đầu tiên. Link: <https://arxiv.org/abs/2401.03868>.
+
+### Ý tưởng có thể áp dụng ngay cho project này
+
+- Giữ `gemm_int8_top` làm golden model phần cứng để so sánh với các core tối ưu hơn.
+- Thêm PE signed INT8 riêng và testbench riêng trước khi tạo systolic array.
+- Tạo systolic array nhỏ 2x2 hoặc 4x4 với cùng expected output như testbench hiện tại.
+- Thêm tile buffers sau khi datapath một phép GEMM chạy đúng.
+- Không đưa số liệu FPS/GOPS/LUT/FF/BRAM/timing từ paper vào README chính nếu chưa tự chạy synthesis/implementation và ghi rõ board/toolchain.
