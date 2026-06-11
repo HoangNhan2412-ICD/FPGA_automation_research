@@ -4,9 +4,17 @@ Ngày cập nhật: 2026-06-11.
 
 ## Mục tiêu kiểm thử
 
-Testbench đầu tiên là `tb/tb_gemm_int8_top.sv`, kiểm thử `gemm_int8_top` với GEMM signed INT8 kích thước 2x2.
+Testbench `tb/tb_gemm_int8_top.sv` kiểm thử `gemm_int8_top` với nhiều case signed INT8:
 
-Input:
+| Test | Kích thước | Mục tiêu | Expected summary | Kết quả |
+|---|---:|---|---|---|
+| `2x2_original_mixed_sign` | 2x2 | Case baseline ban đầu, có B âm | `[[17, 3], [39, 5]]` | PASS |
+| `2x2_negative_int8` | 2x2 | A âm và B âm/dương để kiểm tra signed multiply | `[[-5, 5], [-11, 11]]` | PASS |
+| `2x2_zero_matrix` | 2x2 | A zero, B khác zero | Ma trận zero | PASS |
+| `2x2_identity_matrix` | 2x2 | Nhân với identity | Output bằng A | PASS |
+| `4x4_identity_matrix` | 4x4 | Instance 4x4, B identity | Output bằng A 4x4 | PASS |
+
+Case baseline ban đầu:
 
 ```text
 A = [[1, 2],
@@ -14,11 +22,7 @@ A = [[1, 2],
 
 B = [[ 5, -1],
      [ 6,  2]]
-```
 
-Expected:
-
-```text
 C = A*B = [[17, 3],
            [39, 5]]
 ```
@@ -27,7 +31,7 @@ C = A*B = [[17, 3],
 
 - Đã cài/chạy được Icarus Verilog trong container và simulation PASS.
 - Đã cài/chạy được Verilator lint với tùy chọn `--timing` và lint PASS.
-- Đã chạy Python golden check cho input 2x2 và xác nhận expected output là `[[17, 3], [39, 5]]`; đây là kiểm tra độc lập cho expected output, không thay thế RTL simulation.
+- Đã chạy Python golden check cho các case 2x2/4x4 và xác nhận expected output; đây là kiểm tra độc lập cho expected output, không thay thế RTL simulation.
 - Ghi chú: `apt-get update` có cảnh báo proxy `403 Forbidden` với repo `mise.jdx.dev`, nhưng các package từ Ubuntu archive vẫn cài được và không ảnh hưởng đến Icarus/Verilator check.
 
 ## Lệnh chạy bằng Icarus Verilog
@@ -40,10 +44,10 @@ iverilog -g2012 -Wall -o build/tb_gemm_int8_top.vvp rtl/gemm_int8_top.sv tb/tb_g
 vvp build/tb_gemm_int8_top.vvp
 ```
 
-Kỳ vọng log có các dòng `PASS_CHECK` cho từng phần tử C và dòng cuối:
+Kỳ vọng log có `TEST_PASS` cho từng test và dòng cuối:
 
 ```text
-PASS: tb_gemm_int8_top completed successfully
+PASS: tb_gemm_int8_top completed all tests successfully
 ```
 
 Waveform được ghi tại:
@@ -83,4 +87,12 @@ mkdir -p build && iverilog -g2012 -Wall -o build/tb_gemm_int8_top.vvp rtl/gemm_i
 verilator --lint-only --sv --timing -Wall rtl/gemm_int8_top.sv tb/tb_gemm_int8_top.sv
 ```
 
-Kết quả Icarus Verilog có `PASS_CHECK` cho cả 4 phần tử output và dòng cuối `PASS: tb_gemm_int8_top completed successfully`. Verilator lint không báo lỗi sau khi thêm timescale cho RTL, dùng `--timing` cho testbench có delay/event control, thu hẹp width của chỉ số output, drive `start` không bị race tại cạnh clock và dùng signal `busy` trong testbench.
+Kết quả Icarus Verilog có `TEST_PASS` cho 5 test (`2x2_original_mixed_sign`, `2x2_negative_int8`, `2x2_zero_matrix`, `2x2_identity_matrix`, `4x4_identity_matrix`) và dòng cuối `PASS: tb_gemm_int8_top completed all tests successfully`. Verilator lint không báo lỗi sau khi thêm timescale cho RTL, dùng `--timing` cho testbench có delay/event control, thu hẹp width của chỉ số output, drive `start` không bị race tại cạnh clock và dùng signal `busy` trong testbench.
+
+## Signed/width review
+
+- A/B dùng signed `DATA_WIDTH`, default INT8.
+- Product raw dùng `PRODUCT_WIDTH = 2*DATA_WIDTH`, default signed 16-bit.
+- Product được sign-extend hoặc truncate về `ACC_WIDTH` trước khi accumulate.
+- Default `ACC_WIDTH=32` đủ rộng cho các case 2x2/4x4 trong testbench.
+- Chưa có synthesis/timing/resource/board result.

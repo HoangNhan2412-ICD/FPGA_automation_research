@@ -43,3 +43,12 @@
 - Chạy lại Icarus Verilog simulation: PASS với expected output `[[17, 3], [39, 5]]`.
 - Chạy lại Verilator lint bằng `--timing`: PASS.
 - Cập nhật `docs/simulation_report.md` với kết quả chạy thật và lệnh lint đúng cho testbench có delay/event control.
+
+## 2026-06-11 - Interface protocol and expanded GEMM tests
+
+- Thêm `docs/interface_protocol.md` mô tả packed row-major bit range cho A/B/C, ví dụ 2x2, protocol `start/busy/done/rst_n`, thời điểm `c_matrix` valid và signed/width policy.
+- Mở rộng `tb/tb_gemm_int8_top.sv` thành nhiều test: baseline 2x2, negative INT8, zero matrix, 2x2 identity và 4x4 identity.
+- Thêm `product_wide` signed `2*DATA_WIDTH` trong RTL để product raw của MAC rõ ràng trước khi resize về `ACC_WIDTH`.
+- Cập nhật `docs/simulation_report.md`, `docs/signal_table.md`, `docs/parameter_table.md` theo test và width mới.
+- Chạy lại Icarus Verilog simulation và Verilator lint: PASS.
+- Không thêm synthesis/timing/resource/board-result claim.

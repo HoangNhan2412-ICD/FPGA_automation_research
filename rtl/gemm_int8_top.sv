@@ -36,9 +36,11 @@ module gemm_int8_top #(
 
     localparam int C_ELEMENTS = M * N;
     localparam int C_ELEM_INDEX_WIDTH = (C_ELEMENTS <= 1) ? 1 : $clog2(C_ELEMENTS);
+    localparam int PRODUCT_WIDTH = 2 * DATA_WIDTH;
 
     logic signed [DATA_WIDTH-1:0] a_value;
     logic signed [DATA_WIDTH-1:0] b_value;
+    logic signed [PRODUCT_WIDTH-1:0] product_wide;
     logic signed [ACC_WIDTH-1:0] product_value;
     logic [C_ELEM_INDEX_WIDTH-1:0] c_elem_index;
 
@@ -59,9 +61,17 @@ module gemm_int8_top #(
     always_comb begin
         a_value = get_a_value(m_idx_q, k_idx_q);
         b_value = get_b_value(k_idx_q, n_idx_q);
-        product_value = $signed(a_value) * $signed(b_value);
+        product_wide = $signed(a_value) * $signed(b_value);
         c_elem_index = C_ELEM_INDEX_WIDTH'(m_idx_q*N + n_idx_q);
     end
+
+    generate
+        if (ACC_WIDTH >= PRODUCT_WIDTH) begin : gen_product_sign_extend
+            assign product_value = {{(ACC_WIDTH-PRODUCT_WIDTH){product_wide[PRODUCT_WIDTH-1]}}, product_wide};
+        end else begin : gen_product_truncate
+            assign product_value = product_wide[ACC_WIDTH-1:0];
+        end
+    endgenerate
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

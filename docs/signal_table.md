@@ -25,7 +25,8 @@ Ngày cập nhật: 2026-06-11.
 | `k_idx_q` | `int unsigned` | Chỉ số reduction K. |
 | `a_value` | signed `DATA_WIDTH` | Phần tử A hiện tại. |
 | `b_value` | signed `DATA_WIDTH` | Phần tử B hiện tại. |
-| `product_value` | signed `ACC_WIDTH` | Tích signed đã đưa về width accumulator. |
+| `product_wide` | signed `2*DATA_WIDTH` | Tích signed raw của `a_value*b_value`; với INT8 là signed 16-bit. |
+| `product_value` | signed `ACC_WIDTH` | Tích signed đã sign-extend hoặc truncate về width accumulator. |
 | `c_elem_index` | `logic [C_ELEM_INDEX_WIDTH-1:0]` | Chỉ số phần tử C hiện tại; bit offset khi truy cập packed output là `c_elem_index*ACC_WIDTH`. |
 
 ## Testbench `tb_gemm_int8_top`

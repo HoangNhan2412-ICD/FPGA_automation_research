@@ -11,6 +11,7 @@ Ngày cập nhật: 2026-06-11.
 | `K` | 2 | Chiều reduction: A là `M x K`, B là `K x N`. | Phải > 0. Testbench hiện kiểm thử `K=2`. |
 | `DATA_WIDTH` | 8 | Bit width của phần tử input A/B. | Mặc định INT8 signed. |
 | `ACC_WIDTH` | 32 | Bit width accumulator/output C. | Mặc định đủ rộng cho test nhỏ. Nếu nhỏ hơn `2*DATA_WIDTH`, simulation cảnh báo truncate product. |
+| `PRODUCT_WIDTH` | `2*DATA_WIDTH` | Internal localparam cho signed product raw. | Với INT8 là 16-bit; không phải top-level parameter. |
 
 ## Công thức width
 
