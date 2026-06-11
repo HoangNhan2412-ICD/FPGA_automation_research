@@ -1,0 +1,23 @@
+# Paper comparison table
+
+Ngày cập nhật: 2026-06-11.
+
+| # | Paper | Year | Source | Main topic | FPGA board verified? | Performance metrics status | Project relevance |
+|---|---|---:|---|---|---|---|---|
+| 1 | FlightLLM: Efficient Large Language Model Inference with a Complete Mapping Flow on FPGAs | 2024 | <https://arxiv.org/abs/2401.03868> | LLM FPGA mapping, sparsity, mixed precision, memory hierarchy | Xilinx Alveo U280 and Versal VHK158 are stated in abstract | Metrics stated in abstract; **Needs verification** before reuse | Medium/high for long-term LLM flow; too complex for first RTL milestone |
+| 2 | BAQET: BRAM-aware Quantization for Efficient Transformer Inference via Stream-based Architecture on an FPGA | 2025 | <https://dblp.org/rec/conf/fpga/YangCLLHH25.html>, <https://doi.org/10.1145/3706628.3708849> | BRAM-aware quantization, stream-based Transformer inference | U55C indicated by located PDF/slide; **Needs verification** | **Needs verification** | High for BRAM budgeting and streaming attention roadmap |
+| 3 | High-Frequency Systolic Array-Based Transformer Accelerator on Field Programmable Gate Arrays | 2023 | <https://doi.org/10.3390/electronics12040822> | Systolic array for MHA/FFN, high-frequency FPGA implementation | Xilinx ZCU102 stated | Frequency metrics stated; **Needs verification** for exact config | Very high for GEMM/Transformer systolic architecture |
+| 4 | FTRANS: Energy-Efficient Acceleration of Transformers using FPGA | 2020 | <https://arxiv.org/abs/2007.08563> | Transformer compression + FPGA acceleration | Board not in abstract; **Needs verification** | Abstract has compression/speedup/energy figures; **Needs verification** | Medium: useful for compression/layout ideas after dense GEMM works |
+| 5 | Generating Systolic Array Accelerators With Reusable Blocks | 2020 | <https://ceca.pku.edu.cn/docs/20200915170624995514.pdf> | Reusable systolic array blocks, tiling, data feeders/collectors | Xilinx VU9P stated in PDF | Frequency/GOp/s stated in PDF; **Needs verification** for apples-to-apples | Very high for PE/feeder/collector/control decomposition |
+| 6 | Systolic Tensor Array: An Efficient Structured-Sparse GEMM Accelerator for Mobile CNN Inference | 2020 | <https://arxiv.org/abs/2005.08098> | INT8 GEMM, Tensor-PE, structured sparsity | No FPGA board in abstract; **Needs verification** | Area/power ratios stated; **Needs verification** | Medium/high for INT8 PE evolution after scalar PE baseline |
+| 7 | A³: Accelerating Attention Mechanisms in Neural Networks with Approximation | 2020 | <https://arxiv.org/abs/2002.10941> | Approximate attention hardware acceleration | No FPGA board in abstract; **Needs verification** | Abstract has qualitative speedup/efficiency only; **Needs verification** | Medium for future approximate/sparse attention, not first milestone |
+| 8 | CoQMoE: Co-Designed Quantization and Computation Orchestration for Mixture-of-Experts Vision Transformer on FPGA | 2025 | <https://arxiv.org/abs/2506.08496> | Quantized MoE ViT, streaming attention, reusable linear ops | Board not in abstract; **Needs verification** | FPS/throughput/energy stated in abstract; **Needs verification** | Medium: reusable linear ops are relevant; MoE is later roadmap |
+| 9 | QUARK: Quantization-Enabled Circuit Sharing for Transformer Acceleration by Exploiting Common Patterns in Nonlinear Operations | 2025/2026 | <https://arxiv.org/abs/2511.06767> | FPGA nonlinear op acceleration, circuit sharing, quantization | Board not in abstract; **Needs verification** | Speedup/overhead reductions stated in abstract; **Needs verification** | Medium for Softmax/GELU/LayerNorm after GEMM/Attention |
+| 10 | LLM on FPGA: Squeezing Language Models by Quantization and Multi-Query Attention and its Efficient Hardware Architecture | 2025 | <https://scholarx.skku.edu/item/a567f2df-f6a1-4136-822d-5c44d19d6cb6>, <https://doi.org/10.1109/ISOCC66390.2025.11329964> | Tiny/on-chip LLM, low-bit quantization, MQA, Verilog streaming | Xilinx Artix-7 indicated by metadata; **Needs verification** | Metadata has tokens/s/resource utilization; **Needs verification** | High for small Transformer/attention in Verilog, but details must be checked |
+
+## Ranking for current repo milestones
+
+1. **Immediate architecture reference:** High-Frequency Systolic Array-Based Transformer Accelerator; Generating Systolic Array Accelerators With Reusable Blocks.
+2. **Memory/BRAM reference:** BAQET; LLM on FPGA: Squeezing Language Models...
+3. **INT8/GEMM PE reference:** Systolic Tensor Array.
+4. **Later Transformer extensions:** FlightLLM, CoQMoE, QUARK, A³, FTRANS.
